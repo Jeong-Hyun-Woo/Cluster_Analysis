@@ -45,9 +45,9 @@ main.rbで生成されたファイルと同じディレクトリに移動して�
 	gnuplot> set autoscale
 	gnuplot> plot 'dev_test.txt' using 1:2 with linespoints lt 3 lw 3 pt 5 ps 2
 
-↓タイムスロット毎のパケット数のプロット
+↓タイムスロット毎のパケット数のプロット(現段階)
 
-	gnuplot> plot 'input_data_test.txt' using 1:2 with linespoints lt 3 lw 1 pt 0 ps 2
+	gnuplot> plot 'input_data_test.txt' using 1:2 with linespoints lt 3 lw 1 pt 0 ps 2,'input_data_test.txt' using 1:3 with linespoints lt 1 lw 1 pt 0 ps 3,'input_data_test.txt' using 1:4 with linespoints lt 2 lw 1 pt 0 ps 2
 
 	
 
