@@ -28,7 +28,7 @@ Packet_num =12  #一つのタイムスロットの数を管理
 		exit
 	end
 		if ARGV[4].nil?&&ARGV[4].nil?
-		p "ERROR：入力ファイル名を入力してください。"
+		p "ERROR：出力ファイル名を入力してください。"
 		exit
 	end
 
