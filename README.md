@@ -36,12 +36,18 @@ main.rbで生成されたファイルと同じディレクトリに移動して�
 
 
 ↓対数表示にしてR(k)のプロット
+
 	gnuplot> set logscale y
 	gnuplot> plot 'R(k)_test.txt' using 1:2 with linespoints lt 3 lw 3 pt 5 ps 2 
 
 ↓元の表示にして逸脱度をプロット
+
 	gnuplot> set autoscale
 	gnuplot> plot 'dev_test.txt' using 1:2 with linespoints lt 3 lw 3 pt 5 ps 2
+
+↓タイムスロット毎のパケット数のプロット
+
+	gnuplot> plot 'input_data_test.txt' using 1:2 with linespoints lt 3 lw 1 pt 0 ps 2
 
 	
 
