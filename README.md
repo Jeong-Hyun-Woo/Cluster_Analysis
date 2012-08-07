@@ -1,0 +1,4 @@
+statistical_clistering_methodについて
+
+
+まず、テスト
