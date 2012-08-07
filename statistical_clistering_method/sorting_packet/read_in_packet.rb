@@ -12,7 +12,7 @@ def inp_d
 		exit
 	end
 if ARGV[1].nil?&&ARGV[1].nil?
-		p "ERROR：入力ファイル名を入力してください。"
+		p "ERROR：出力ファイル名を入力してください。"
 		exit
 	end
 
