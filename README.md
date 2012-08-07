@@ -34,7 +34,6 @@ Gnuplotでのプロットについて
 ----------------
 main.rbで生成されたファイルと同じディレクトリに移動して以下のようにしてください。
 
-	逸脱度のプロット
 	$gnuplot
 
 	G N U P L O T
@@ -49,4 +48,5 @@ main.rbで生成されたファイルと同じディレクトリに移動して�
 	immediate help:   type "help"  (plot window: hit 'h')
 
 	Terminal type set to 'x11'
+	↓R(k)のプロット
 	gnuplot> plot 'R(k)_test.txt' using 1:2 with linespoints lt 3 lw 3 pt 5 ps 2 
