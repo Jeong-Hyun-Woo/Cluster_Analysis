@@ -48,5 +48,13 @@ main.rbで生成されたファイルと同じディレクトリに移動して�
 	immediate help:   type "help"  (plot window: hit 'h')
 
 	Terminal type set to 'x11'
-	↓R(k)のプロット
+	↓対数表示にしてR(k)のプロット
+	gnuplot> set logscale y
 	gnuplot> plot 'R(k)_test.txt' using 1:2 with linespoints lt 3 lw 3 pt 5 ps 2 
+
+	↓元の表示にして逸脱度をプロット
+	gnuplot> set autoscale
+	gnuplot> plot 'dev_test.txt' using 1:2 with linespoints lt 3 lw 3 pt 5 ps 2
+
+	
+
