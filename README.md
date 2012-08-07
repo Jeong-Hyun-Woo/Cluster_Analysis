@@ -27,17 +27,26 @@ read_in_packetで生成したファイルを統合し、main.rbで使用でき�
 
 	$ sort_packet.rb 【入力ファイル名】 【入力ファイル名】 【入力ファイル名】 【出力ファイル名】
 
+###sample###
+現在使用可能なファイル
 
-パラメータの解説
+Gnuplotでのプロットについて
 ----------------
-リストの間に空行を挟むと、それぞれのリストに `<p>` タグが挿入され、行間が
-広くなります。
- 
-    def MyFunction(param1, param2, ...)
- 
-+   `param1` :
-    _パラメータ1_ の説明
- 
-+   `param2` :
-    _パラメータ2_ の説明
- 
+main.rbで生成されたファイルと同じディレクトリに移動して以下のようにしてください。
+
+	逸脱度のプロット
+	$gnuplot
+
+	G N U P L O T
+	Version 4.6 patchlevel 0    last modified 2012-03-04 
+	Build System: Darwin x86_64
+
+	Copyright (C) 1986-1993, 1998, 2004, 2007-2012
+	Thomas Williams, Colin Kelley and many others
+
+	gnuplot home:     http://www.gnuplot.info
+	faq, bugs, etc:   type "help FAQ"
+	immediate help:   type "help"  (plot window: hit 'h')
+
+	Terminal type set to 'x11'
+	gnuplot> plot 'R(k)_test.txt' using 1:2 with linespoints lt 3 lw 3 pt 5 ps 2 
