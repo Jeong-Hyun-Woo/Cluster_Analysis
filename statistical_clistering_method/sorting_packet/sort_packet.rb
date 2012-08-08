@@ -27,10 +27,12 @@ Packet_num =12  #一つのタイムスロットの数を管理
 		p "ERROR：入力ファイル名を入力してください。"
 		exit
 	end
+=begin
 		if ARGV[4].nil?&&ARGV[4].nil?
-		p "ERROR：出力ファイル名を入力してください。"
+		p "ERROR：入力ファイル名を入力してください。"
 		exit
 	end
+=end
 
 #ファイルにパケット数の羅列を書き込む
 	f = File::open(ARGV[0],'r')
@@ -67,18 +69,21 @@ Packet_num =12  #一つのタイムスロットの数を管理
 		f.print @x[n],"\t",0,"\n"
 		f.print @y[n],"\t",1,"\n"
 		f.print @z[n],"\t",2,"\n"
+			f.puts "t\n"
 
+=begin
 		if i == Packet_num
 			i = 0
 			f.puts "t\n"
 		end
+=end
 	end
 	f.close
 	
 	#タイムスロットごとのパケット数を書き込む
 	
 	x=y=z=s=0
-	
+=begin	
 	
 	filename = File.basename(ARGV[4])
 	f = File.open("#{filename}",'w')
@@ -97,6 +102,6 @@ Packet_num =12  #一つのタイムスロットの数を管理
 		end
 	end
 	f.close
-	
+=end	
 	
 	

@@ -35,7 +35,7 @@ def cal_r(x)
 		ww =[]		#プロトコル種別毎の最大値ー最小値を入れておく配列
         w = []		#クラスタ分布幅wを入れておく配列
 		
-		if r < 0.01&&@w==1
+		if r < 0.1&&@w==1
 			@kk = @k
 			@w += 1
 		end
@@ -45,6 +45,7 @@ def cal_r(x)
 			sta << @x[tim][0].standard_deviation	#各タイムスロット毎に標準偏差をだしておく
 		end
 		
+		#p sta
 		
 		rr = RSRuby::instance   #R言語使用に必要
 		km = rr.kmeans(sta,@k)		#R言語からのkmeansクラスタリング処理
@@ -73,46 +74,47 @@ def cal_r(x)
 			end
 		end
 		#print "tim_k\n",tim_k,"\n"		#どのように分けられているかタイムスロットごとに表示(確認用)
+		
 
-		p_max= @x[0][1].max
-		for n in 0...tim_k.size		#何番目のクラスタに属するtim_kかを識別
-			pro = 0	#プロトコル番号の操作
-			max = Array.new(p_max+1){0}
-			min = Array.new(p_max+1){100}
-			#i =0
-			
-			for i in 0...tim_k[n].size	#tim_k[n]の配列に格納されている要素を取り出すのに使う
-				tim_o = Array.new(p_max){[]}
-				for q in 0...@x[tim_k[n][i]][0].size		#@xの要素を取り出すのに使う
-					if @x[tim_k[n][i]][1][q] == pro 
-						tim_o[pro] << @x[tim_k[n][i]][0][q]
+
+		prot = @x[0][1].max
+
+		anko = Array.new(prot){[]}			#プロトコルごとの最大/最小値を計算までに入れておく配列　ankoの変数の名前は書いていたときにあんこが食べたいと思ったから
+
+		for ki in 0...tim_k.size			#tim_kのサイズ分つまりクラスタ数分まわす
+			for kj in 0...tim_k[ki].size			#クラスタに属する要素の数分まわす
+				for i in 0...@x[tim_k[ki][kj]][1].max	#プロトコルの数分まわす
+					for n in 0...@x[tim_k[ki][kj]][0].size		#xの要素分まわす
+						if @x[tim_k[ki][kj]][1][n] == i
+							anko[i] << @x[tim_k[ki][kj]][0][n]
+						end
 					end
 				end
-				
-				if tim_o[pro].max > max[pro]
-					max[pro] = tim_o[pro].max
-				end
-				
-				if tim_o[pro].min < min[pro]
-					min[pro] = tim_o[pro].min
-				end
-			#i+=1
 			end
-			ww << max[pro] -min[pro]
-			pro+=1
+			#p anko		#確認用
+			
+			for u in 0...prot
+				ww << anko[u].max - anko[u].min
+			end
+			
+			#print "ww = ",ww,"\n\n\n"		#確認用
+			
+			w << (ww.inject(:*)).to_f
+			
+			ww=[]							#wwをリセットして次のプロトコルの要素を入れる？
+			anko = Array.new(prot){[]}		#ankoを初期化してリセット
 		end
-		
-		#print "\t\t冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊\n"				
-        #print "ww = ",ww,"\n\n\n"	　#確認用
+    
+		#print "\n\t\t冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊冊\n"				
 
 
-        w << (ww.inject(:*)).to_f
         v << w.inject(:+)
 
         r = v[-1] /v[0]          #v1が０になることによる、0で割ってしまうことを冒すことがある。
+		p r
         r_v << r
 
-        #print "w = ",w,"\n"			#確認用		
+        #print "w = ",w,"\n\n"			#確認用		
         #print  "V(k) = ",v,"\n\n"		#確認用
         #print "V(1) = ",v[0],"\n\n"	#確認用
         #print "v[-1] = ",v[-1],"\n"	#確認用
@@ -124,7 +126,8 @@ def cal_r(x)
 		
 		@k+=1
     end
-    print "\n\n\nR(k) = ",r_v,"\n"	#R(k)を入れた配列の出力
+    print "\n\n\nR(k) = ",r_v,"\n"	#R(k)を入れた配列の出力	
+	
 	
 #################################ファイル出力部分############################################	
 	filename = File.basename(ARGV[0])
@@ -137,6 +140,7 @@ def cal_r(x)
 
 	#p @km[@k-1]					#確認用
 	#print "return @km = ",@km,"n"	#確認用
+	print "\nクラスタ数k = ",@kk,"\n"		#逸脱度で使うクラスタ数を表示
 		@s = [@x,@km[@kk]]			#このまま渡して向こうさんで値とプロトコルを仕分ける
 	#p @s	#確認用
 	return @s,@kk
