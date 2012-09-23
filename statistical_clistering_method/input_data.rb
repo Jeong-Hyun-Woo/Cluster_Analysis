@@ -31,4 +31,5 @@ def inp_d
 		end
 	end
 	f.close
+	#p @x
 end

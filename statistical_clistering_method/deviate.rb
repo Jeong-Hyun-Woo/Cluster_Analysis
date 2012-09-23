@@ -49,19 +49,29 @@ def dev(s,c_k)
 					end
 				end
 				s_j_i_avg[k-1][i] = s_j_i[k-1][i].avg
+				
+				
+				
+				#非常用試しの措置，G言語のkmeans関数を改良した方が結果に対する影響が出にくくてよい
+				
+				if s_j_i[k-1][i].standard_deviation == 0
+				s_j_i_sta[k-1][i] = 0.000000000001
+				else
 				s_j_i_sta[k-1][i] = s_j_i[k-1][i].standard_deviation
+				end
+				#p s_j_i[k-1][i]
 			end
 		end
 	end
 	
-	
-	p s_j_i
-	print "\ns_j_i_avg\n" 
-	p s_j_i_avg
-	print "\ns_j_i_sta\n" 
-	p s_j_i_sta
-	print "\n\n" 
-
+=begin
+	p s_j_i						#確認用
+	print "\ns_j_i_avg\n"		#確認用 
+	p s_j_i_avg					#確認用
+	print "\ns_j_i_sta\n" 		#確認用
+	p s_j_i_sta					#確認用
+	print "\n\n"				#確認用
+=end	
 	sigma_s =[]
 	front_dev = []
 	dev = []
@@ -70,19 +80,22 @@ def dev(s,c_k)
 			for i in 0...pro+1
 					sigma_s << ((s_t_i[tim][i] - s_j_i_avg[j][i])/s_j_i_sta[j][i])**2
 			end
-			p sigma_s		#確認用
+			#p sigma_s		#確認用
 			front_dev << Math::sqrt(sigma_s.inject(:+))
 			sigma_s = []
 		end
+=begin		
+		print "\n\nfront_dev\n"
 		p front_dev		#確認用
 		print "\n\n" 
+=end			
 		dev << front_dev.min
 		front_dev = []
 	end		
 		print "\n\n\ndev = ",dev,"\n"
 				
 											
-		#################################ファイル出力部分############################################	
+		##############################ファイル出力部分############################################	
 	filename = File.basename(ARGV[0])
 	f =open("dev_#{filename}",'w')
 		dev.each_index do |i|
