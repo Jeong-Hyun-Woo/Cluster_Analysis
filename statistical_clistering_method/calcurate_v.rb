@@ -18,7 +18,7 @@ require File.expand_path("../array",__FILE__)
 @k =1		#クラスタ数管理をする変数
 @kk=1		#逸脱度の処理の方に渡す@kmの配列を操作する際に必要
 @w=1		#rが閾値以下になった時に終了させる場合に、使う。
-Max_Cluster_num = 20        #クラスタをいくつまで増やすか
+Max_Cluster_num = 10        #クラスタをいくつまで増やすか
 
 
 def cal_r(x)
