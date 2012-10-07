@@ -18,7 +18,7 @@ require File.expand_path("../array",__FILE__)
 @k =1		#クラスタ数管理をする変数
 @kk=1		#逸脱度の処理の方に渡す@kmの配列を操作する際に必要
 @w=1		#rが閾値以下になった時に終了させる場合に、使う。
-Max_Cluster_num = 10        #クラスタをいくつまで増やすか
+Max_Cluster_num = 9        #クラスタをいくつまで増やすか
 
 
 def cal_r(x)
@@ -29,24 +29,36 @@ def cal_r(x)
     v = []      #V(k)を格納
     r_v = []    #R(k)の値を格納
     r = 1		#R(k)の値を閾値と比べるための変数
+	
+	
+	
 	loop do
-		#print "\n〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓k = ",@k,"〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓〓\n\n"
 		km =[]		#クラスタリングした結果を入れる配列
 		ww =[]		#プロトコル種別毎の最大値ー最小値を入れておく配列
         w = []		#クラスタ分布幅wを入れておく配列
-		
-
 		@km << nil
-		sta =[]		#@x[tim]の標準偏差を入れておく配列
-		for tim in 0...@x.size
-			sta << @x[tim][0].standard_deviation	#各タイムスロット毎に標準偏差をだしておく
-		end
-		
-		#p sta
-		
+	
+
+		#¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
+		#R言語の処理xとは別にmatrix型のデータを読み込んでクラスタリングし，その値をkmに返す
 		rr = RSRuby::instance   #R言語使用に必要
-		km = rr.kmeans(sta,@k)		#R言語からのkmeansクラスタリング処理
-		#print "km = ",km["cluster"],"\n"	#確認用
+		 #km = rr.kmeans(@x,@k)		#R言語からのkmeansクラスタリング処理
+        #if ARGV[2].nil?
+         #   p "ERROR：第三引数に【通常データ】ファイル名を入力してください。"
+         #   exit
+        #end
+        #filename = ~/Desktop/normal20120528r.csv#ARGV[2]
+#p filename
+		 km = rr.eval_R(<<-RCOMMAND)
+
+        #a <- read.csv(filename)	
+		a <- read.csv("~/Desktop/normal20120530r.csv")
+			kmeans(a,#{@k})
+		 RCOMMAND
+		 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
+		print "k = ",@k,"\tkm = ",km["cluster"],"\n\n"		######確認用######
+
+
 
 		for kk in 0...km["cluster"].size
 			kme = []			#@sに渡すための@kmに渡すために調節した配列
@@ -54,7 +66,6 @@ def cal_r(x)
 				kme << km["cluster"][kk]
 			end
 
-	
 			if @km[@k] == nil
 				@km[@k] = [kme]	#何も入ってなければnilから変更する
 			else
@@ -70,34 +81,31 @@ def cal_r(x)
 				end
 			end
 		end
-		#print "tim_k\n",tim_k,"\n"		#どのように分けられているかタイムスロットごとに表示(確認用)
+		#print "tim_k\n",tim_k,"\n"		#どのように分けられているかタイムスロットごとに表示######確認用######
 		
 
-
-		prot = @x[0][1].max
-
+		prot = @x[0][1].max+1
 		anko = Array.new(prot){[]}			#プロトコルごとの最大/最小値を計算までに入れておく配列　ankoの変数の名前は書いていたときにあんこが食べたいと思ったから
+		
+		#p tim_k[0]
 
-		for ki in 0...tim_k.size			#tim_kのサイズ分つまりクラスタ数分まわす
+		for ki in 0...tim_k.size					#tim_kのサイズ分つまりクラスタ数分まわす
 			for kj in 0...tim_k[ki].size			#クラスタに属する要素の数分まわす
-				for i in 0...@x[tim_k[ki][kj]][1].max	#プロトコルの数分まわす
+				for i in 0..@x[tim_k[ki][kj]][1].max	#プロトコルの数分まわす
 					for n in 0...@x[tim_k[ki][kj]][0].size		#xの要素分まわす
 						if @x[tim_k[ki][kj]][1][n] == i
 							anko[i] << @x[tim_k[ki][kj]][0][n]
 						end
 					end
+					
 				end
+				
 			end
-			#p anko		#確認用
-			
-			for u in 0...prot
+			for u in 0 ...prot	
 				ww << anko[u].max - anko[u].min
 			end
-			
-			#print "ww = ",ww,"\n\n\n"		#確認用
-			
+			#print "ww = ",ww,"\n\n\n"					######確認用######
 			w << (ww.inject(:*)).to_f
-			
 			ww=[]							#wwをリセットして次のプロトコルの要素を入れる？
 			anko = Array.new(prot){[]}		#ankoを初期化してリセット
 		end
@@ -106,22 +114,20 @@ def cal_r(x)
 
 
         v << w.inject(:+)
-
         r = v[-1] /v[0]          #v1が０になることによる、0で割ってしまうことを冒すことがある。
-		#p r
         r_v << r
 
-        #print "w = ",w,"\n\n"			#確認用		
-        #print  "V(k) = ",v,"\n\n"		#確認用
-        #print "V(1) = ",v[0],"\n\n"	#確認用
-        #print "v[-1] = ",v[-1],"\n"	#確認用
-        #print "R(k) = ",r,"\n"			#確認用
+        #print "w = ",w,"\n\n"							######確認用######
+        #print  "V(k) = ",v,"\n\n"						######確認用######
+        #print "V(1) = ",v[0],"\n\n"					######確認用######
+        #print "v[-1] = ",v[-1],"\n"					######確認用######
+        #print "R(k) = ",r,"\n"							######確認用######
 
         if @k	== Max_Cluster_num	#閾値以下にならなかった場合の無限ループを防ぐ		×(閾値で終了させないので、クラスタ数の最大を設定しておく)
             break
         end   
 		
-		if r < 0.08&&@w==1
+		if r < 0.27&&@w==1
 			@kk = @k
 			@w += 1
 		end

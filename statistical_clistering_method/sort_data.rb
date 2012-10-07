@@ -164,12 +164,12 @@ if ARGV[1].nil?&&ARGV[1].nil?
     p "ERROR：入力ファイル名を入力してください。"
     exit
 end
-=begin
+#=begin
 if ARGV[2].nil?&&ARGV[2].nil?
-    p "ERROR：タイムスライスの時間間隔を入力してください。(単位:秒)"
+    p "ERROR：入力ファイル名を入力してください。"
     exit
 end
-=end
+#=end
 time_slice
 protocol_classification
 
@@ -181,5 +181,27 @@ f = File.open("#{filename}",'w')
             f.print @count_p[i][j],"\t",j,"\n"
         end
         f.puts "t\n"
+    end
+f.close
+
+un = 0
+filename = File.basename(ARGV[2])
+f = File.open("#{filename}",'w')
+
+    f.print　"p1\tp2\tp3\n"
+
+
+
+    for i in 0...@count_p.size
+        for j in 0 ...@count_p[i].size
+			if un == 3
+				f.print "\n"
+				un = 1
+			else
+				f.print @count_p[i][j],"\t"
+			end
+			un += 0
+        end
+        f.puts "\n"
     end
 f.close

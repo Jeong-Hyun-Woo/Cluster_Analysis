@@ -1,5 +1,8 @@
 # -*-coding: utf-8 -*-
 require File.expand_path("../array",__FILE__)
+require File.expand_path("../calcurate_s",__FILE__)
+require File.expand_path("../input_data",__FILE__)
+
 
 =begin
 #################################################
@@ -7,95 +10,88 @@ require File.expand_path("../array",__FILE__)
 	また、その結果をファイルに出力するメソッド
 #################################################
 =end
-
-def dev(s,c_k)
-	#print "\n\n\ns = ",s,"\n\n\n"		#確認用
-	#print "\n\n\nk = ",c_k,"\n\n\n"	＃確認用
-
-	pro = 0		#プロトコル数
+#@y = []		#異常データ格納に使う
 
 
-	ss = []
-	dev_k = []	#逸脱度を入れておく配列
-
-	for i in 0...@x.size	
-		ss << [s[0][i][0],s[0][i][1],s[1][i]]
-	end
-	#print "\n\n\nss = ",ss,"\n\n\n"	#確認用
-
-	s_t_i = Array.new(ss.size){[]}
-	for tim in 0...ss.size			#タイムスタンプでループ
-		for i in 0..ss[tim][1].max		#プロトコル番号でループ
-		pro = ss[tim][1].max
-			for n in 0...ss[tim][0].size
-				if ss[tim][1][n] == i
-					s_t_i[tim] << ss[tim][0][n]
-				end
-			end
-		end	
-	end	
-	#p s_t_i
-	
-	s_j_i = Array.new(c_k){Array.new(pro+1){[]}}
-	s_j_i_avg = Array.new(c_k){Array.new(pro+1){[]}}
-	s_j_i_sta = Array.new(c_k){Array.new(pro+1){[]}}
-
-	for tim in 0...ss.size			#タイムスタンプでループ
-		for k in 1..c_k				#クラスタ番号でループ
-			for i in 0..ss[tim][1].max		#プロトコル番号でループ
-				for n in 0...ss[tim][0].size
-					if ss[tim][1][n] == i&&ss[tim][2][n]==k
-						s_j_i[k-1][i] << ss[tim][0][n]
-					end
-				end
-				s_j_i_avg[k-1][i] = s_j_i[k-1][i].avg
-				
-				
-				
-				#非常用試しの措置，G言語のkmeans関数を改良した方が結果に対する影響が出にくくてよい
-				
-				if s_j_i[k-1][i].standard_deviation == 0
-				s_j_i_sta[k-1][i] = 0.000000000001
-				else
-				s_j_i_sta[k-1][i] = s_j_i[k-1][i].standard_deviation
-				end
-				#p s_j_i[k-1][i]
-			end
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~異常データの入力~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#なんかうまく代入できなかったのでここで！
+def ano
+    y = []
+	in_v =[]
+	in_p =[]
+    
+    if ARGV[1].nil?
+		p "ERROR：第二引数に【異常データ】ファイル名を入力してください。"
+		exit
+    end
+	f = File::open(ARGV[1],'r')
+	f.each do | line|
+        next if line.index('/')
+		if line == "t\n"
+			#@y << [in_v,in_p]
+			y << [in_v,in_p]
+			in_v=[]
+			in_p=[]
+		end
+		if line.include?("\t")==true
+			in_v << line.to_f
+			line.slice!(0,line.index("\t"))
+			in_p << line.to_i
 		end
 	end
-	
-=begin
-	p s_j_i						#確認用
-	print "\ns_j_i_avg\n"		#確認用 
-	p s_j_i_avg					#確認用
-	print "\ns_j_i_sta\n" 		#確認用
-	p s_j_i_sta					#確認用
-	print "\n\n"				#確認用
-=end	
+	f.close
+    return y
+end
+
+
+def dev(s_j_i_avg,s_j_i_sta,c_k)
+
+    y = []
+    y = ano
+    print "---------------------異常データ-----------------------------------\n",y,"\n---------------------------------------------------------------\n"
+	s_t_i = 	s_j_i = Array.new(y.size){Array.new(y[0][1].size){[]}}
 	sigma_s =[]
 	front_dev = []
 	dev = []
-	for tim in 0...ss.size
-		for j in 0...c_k
-			for i in 0...pro+1
-					sigma_s << ((s_t_i[tim][i] - s_j_i_avg[j][i])/s_j_i_sta[j][i])**2
+	cal_s(y)
+	
+	for tim in 0...y.size
+		for p in 0...y[tim][1].size
+			for n in 0...y[tim][0].size
+				if y[tim][1][n] == p
+					s_j_i[tim][p] = y[tim][0][n]
+				end
 			end
-			#p sigma_s		#確認用
+		end
+	end
+
+	
+	for tim in 0...@y.size			#タイムスロットでループ
+	#print "timeslot = ",tim,"=========================================\n"
+		for j in 0...c_k			#クラスタでループ			
+		#print "j = ",j,"\n"
+			for i in 0...@y[0][1].size		#プロトコルでループ
+			#p s_j_i_sta[j][i]
+				 xx = (s_t_i[tim][i] - s_j_i_avg[j][i]) / s_j_i_sta[j][i]
+				 sigma_s << xx**(2)
+				#print s_t_i[tim][i]," - ",s_j_i_avg[j][i]," = ",s_t_i[tim][i]-s_j_i_avg[j][i],"\n"
+			end
+			#p sigma_s							######確認用######
 			front_dev << Math::sqrt(sigma_s.inject(:+))
 			sigma_s = []
 		end
+
 =begin		
-		print "\n\nfront_dev\n"
-		p front_dev		#確認用
-		print "\n\n" 
+		print "\n\nfront_dev\n"					######確認用######
+		print "\n",front_dev,"\n\n"				######確認用######
 =end			
 		dev << front_dev.min
 		front_dev = []
 	end		
-		print "\n\n\ndev = ",dev,"\n"
+		print "\n\n\ndev = ",dev,"\n"			######確認用######
 				
 											
-		##############################ファイル出力部分############################################	
+	##############################ファイル出力部############################################	
 	filename = File.basename(ARGV[0])
 	f =open("dev_#{filename}",'w')
 		dev.each_index do |i|
@@ -103,50 +99,4 @@ def dev(s,c_k)
 		end
 	f.close
 	##########################################################################################
-
-		
-					
-	
-=begin
-///////////////////////////////////前バージョン///////////////////////////////////////
-	for tim in 0...ss.size			#タイムスタンプでループ
-		for k in 1..c_k				#クラスタ番号でループ
-			b=[]	#計算した逸脱度を一時、配列に入れる
-			dev =[]
-			for i in 0..ss[tim][1].max		#プロトコル番号でループ
-				a=[]	#プロトコルごとに分けたものを一時、配列に入れておく
-				for n in 0...ss[tim][0].size
-					if ss[tim][1][n] == i&&ss[tim][2][n] == k
-						a << ss[tim][0][n]		#一つのプロトコルを取り出す
-					end
-				end
-				#print "\n\n\na = ",a,"\n\n\n"	#確認用
-				if a[0] != nil
-					for n in 0...a.size
-						b << ((a[n] - a.avg) / a.standard_deviation)**2
-					end
-					#print "\n\n\nb = ",b,"\n\n\n"	#確認用
-				end
-			end
-			if b[0] != nil
-				dev << Math::sqrt(b.inject(:+))
-			end
-		end
-		if dev[0] != nil
-			dev_k << dev.min
-		end	
-	end
-	print "\ndev = ",dev_k,"\n\n\n"	#各タイムスロットの逸脱度の出力
-
-	
-	#################################ファイル出力部分############################################	
-	filename = File.basename(ARGV[0])
-	f =open("dev_#{filename}",'w')
-		dev_k.each_index do |i|
-			f.print i+1,"\t",dev_k[i],"\n"
-		end
-	f.close
-	##########################################################################################
-
-=end
 end
