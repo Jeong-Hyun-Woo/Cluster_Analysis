@@ -39,12 +39,13 @@ def time_slice
 
 =begin    
     num_p = 0
-    protocol.each_with_index do |pro,p|
+    @protocol.each_with_index do |pro,p|
         if pro.is_a?(String)
             pc = pro
-            for p2 in 0...protocol.size
-                if protocol[p2] == pc
-                    protocol[p2] = num_p.to_i
+			print "プロトコル",pro,"\n"
+            for p2 in 0...@protocol.size
+                if @protocol[p2] == pc
+                    @protocol[p2] = num_p.to_i
                 end
             end
             num_p+=1
@@ -53,7 +54,7 @@ def time_slice
     @num_pp = num_p
 =end
 #↓tcp,udp,otherのみバージョン#################
-
+#=begin 
     
     num_p = 0
     for p in 0...@protocol.size
@@ -61,11 +62,15 @@ def time_slice
 			@protocol[p] = 0.to_i
 		elsif @protocol[p] == 'udp'
 			@protocol[p] = 1.to_i
-		else
+		elsif @protocol[p] == 'icmp'
 			@protocol[p] = 2.to_i
+		else
+			@protocol[p] = 3.to_i
         end
     end
-    @num_pp = 3
+    @num_pp = 4
+#=end
+
 ##########################################
 	#p @protocol
 
@@ -188,9 +193,7 @@ un = 0
 filename = File.basename(ARGV[2])
 f = File.open("#{filename}",'w')
 
-    f.print　"p1\tp2\tp3\n"
-
-
+    f.print"p1\tp2\tp3\n"
 
     for i in 0...@count_p.size
         for j in 0 ...@count_p[i].size

@@ -42,17 +42,14 @@ def cal_r(x)
 		#¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 		#R言語の処理xとは別にmatrix型のデータを読み込んでクラスタリングし，その値をkmに返す
 		rr = RSRuby::instance   #R言語使用に必要
-		 #km = rr.kmeans(@x,@k)		#R言語からのkmeansクラスタリング処理
-        #if ARGV[2].nil?
-         #   p "ERROR：第三引数に【通常データ】ファイル名を入力してください。"
-         #   exit
-        #end
-        #filename = ~/Desktop/normal20120528r.csv#ARGV[2]
-#p filename
+        if ARGV[2].nil?
+            p "ERROR：第三引数に【通常データ】ファイル名を入力してください。"
+            exit
+        end
+        filename = ARGV[2]
+		
 		 km = rr.eval_R(<<-RCOMMAND)
-
-        #a <- read.csv(filename)	
-		a <- read.csv("~/Desktop/normal20120530r.csv")
+			a <- read.csv("#{filename}")	
 			kmeans(a,#{@k})
 		 RCOMMAND
 		 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
