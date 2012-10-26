@@ -46,5 +46,12 @@ main.rbで生成されたファイルと同じディレクトリに移動して�
 	gnuplot> set autoscale
 	gnuplot> plot 'dev_test.txt' using 1:2 with linespoints lt 3 lw 3 pt 5 ps 2
 
-	
+↓クラスタ毎のプロトコル種別の平均、標準偏差を出力
+
+	gnuplot> unset key
+	gnuplot>set xzero axis lt -1
+	gnuplot>boxwidth 0.25
+	gnuplot>set xrange[0:4]
+	gnuplot>plot "cluster_0" using 1:2 with boxes fs solid 0.2, "fcluster_0" using 1:2:3 with errorbars lt 3, "cluster_1" using 1:2 with boxes fs solid 0.2 , "cluster_1" using 1:2:3 with errorbars lt 1
+
 
