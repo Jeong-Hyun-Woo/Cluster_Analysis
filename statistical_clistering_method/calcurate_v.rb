@@ -15,10 +15,11 @@ require File.expand_path("../array",__FILE__)
 @x = []		#元の入力データ(ただし、正規化している)
 @s =[]		#逸脱度の処理の方に値を渡すための変数
 @km = []	#クラスタの内容をmainに返すために扱う変数
+@km2 = []
 @k =1		#クラスタ数管理をする変数
 @kk=1		#逸脱度の処理の方に渡す@kmの配列を操作する際に必要
 @w=1		#rが閾値以下になった時に終了させる場合に、使う。
-Max_Cluster_num = 9        #クラスタをいくつまで増やすか
+Max_Cluster_num = 29        #クラスタをいくつまで増やすか
 
 
 def cal_r(x)
@@ -41,20 +42,19 @@ def cal_r(x)
 
 		#¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
 		#R言語の処理xとは別にmatrix型のデータを読み込んでクラスタリングし，その値をkmに返す
-		rr = RSRuby::instance   #R言語使用に必要
         if ARGV[2].nil?
             p "ERROR：第三引数に【通常データ】ファイル名を入力してください。"
             exit
         end
         filename = ARGV[2]
-		
-		 km = rr.eval_R(<<-RCOMMAND)
-			a <- read.csv("#{filename}")	
+		rr = RSRuby::instance   #R言語使用に必要
+        km = rr.eval_R(<<-RCOMMAND)
+			a <- read.csv("#{filename}")
 			kmeans(a,#{@k})
 		 RCOMMAND
 		 #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
-		print "k = ",@k,"\tkm = ",km["cluster"],"\n\n"		######確認用######
-
+		#print "k = ",@k,"\tkm = ",km,"\n\n"#["cluster"],"\n"		######確認用######
+		@km2 << km
 
 
 		for kk in 0...km["cluster"].size
@@ -124,29 +124,29 @@ def cal_r(x)
             break
         end   
 		
-		if r < 0.27&&@w==1
+		if r < 0.15&&@w==1
 			@kk = @k
 			@w += 1
 		end
 		
 		@k+=1
     end
-    print "\n\n\nR(k) = ",r_v,"\n"	#R(k)を入れた配列の出力	
+    print "\nR(k) = ",r_v,"\n"	#R(k)を入れた配列の出力	
 	
 	
-#################################ファイル出力部分############################################	
-	filename = File.basename(ARGV[0])
-	f =open("R(k)_#{filename}",'w')
+#################################ファイル出力部分################################
+	filename = File.basename(ARGV[1])
+	f =open("result/R(k)/R(k)_#{filename}",'w')
 		r_v.each_index do |i|
 			f.print i+1,"\t",r_v[i],"\n"
 		end
 	f.close
-#########################################################################################
+##############################################################################
 
 	#p @km[@k-1]					#確認用
 	#print "return @km = ",@km,"n"	#確認用
 	print "\nクラスタ数k = ",@kk,"\n"		#逸脱度で使うクラスタ数を表示
 		@s = [@x,@km[@kk]]			#このまま渡して向こうさんで値とプロトコルを仕分ける
 	#p @s	#確認用
-	return @s,@kk
+	return @s,@kk,@km2
 end

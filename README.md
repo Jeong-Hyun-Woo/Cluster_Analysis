@@ -1,4 +1,6 @@
 statistical_clistering_method
+x-means法を使用したバージョンはxmeans_statistical_clistering_methodを使用
+使用方法は同じ
 ======================
 概要は省略
 
@@ -23,8 +25,8 @@ mainで使用するために、mysqlから時間毎に分けたCSVファイル�
 
 ### sort_data2.rb ###
 
-sort_data.rbのwiresharkから作成したCSVファイルを振り分ける版。
-12種類に分類する。使用方法はsort_data.rbを同様。
+wiresharkから作成したCSVファイルを振り分ける。
+種類の分類は各自で設定する必要がある。使用方法はsort_data.rbを同様。
 
 	$ ruby sort_data2.rb 【入力ファイル名】 【出力ファイル名】【出力ファイル名(R言語用CSVファイル)】
 

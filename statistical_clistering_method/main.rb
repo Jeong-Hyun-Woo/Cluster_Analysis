@@ -7,6 +7,12 @@ require File.expand_path("../support",__FILE__)
 require File.expand_path("../deviate",__FILE__)
 
 @x = []			#通常データ
+x_front = []
+x_after = []
+x_ano_front = []
+x_ano_after = []
+dev = []
+front_dev = []
 s = []
 k = []			#通常データから求めたクラスタ数
 s_avg = []		#通常データから求めたSijの平均
@@ -38,7 +44,7 @@ def out_put
 
 	##############ファイル出力部分#################
 	filename = File.basename(ARGV[0])
-	f =open("input_data_#{filename}",'w')
+	f =open("result/input/input_data_#{filename}",'w')
 		c[0].each_index do |i|
 			for n in 0...c.size
 				if n == 0 
@@ -55,6 +61,76 @@ def out_put
 end
 
 
+
+
+
+def result_output(x_front,x_after,k,km,s_avg,a_sta,x_ano_front,x_ano_after,dev,front_dev)
+    filename = File.basename(ARGV[1])
+	f =open("result/result_#{filename}",'w')
+#        f.print "##########################通常データ##########################\n"
+#		x_front.each_with_index do |xf,a|
+#			f.print xf[0],"\n"
+#			if (a+1)%5==0
+#				f.print "\n"
+#			end
+#		end
+		f.print "##########################通常データ(標準化)##########################\n"
+		x_after.each_with_index do |xa,b|
+			f.print xa[0],"\n"
+			if (b+1)%5==0
+				f.print "\n"
+			end
+		end
+		f.print "##########################クラスタ数##########################\n"
+        f.print k,"\n"
+        f.print "##########################クラスタリング結果##########################\n"
+		km.each_with_index do |cl,n|
+			f.print "=====クラスタ数",n+1,"個のとき＝＝＝＝＝\n"
+			f.print "cluster\t",cl["cluster"],"\n"
+			f.print "centers\t",cl["centers"],"\n"
+			f.print "totts\t",cl["totss"],"\n"
+			f.print "withinss\t",cl["withinss"],"\n"
+			f.print "tot.withinss\t",cl["tot.withinss"],"\n"
+			f.print "betweenss\t",cl["betweenss"],"\n"
+			f.print "size\t",cl["size"],"\n"
+		end
+        f.print "##########################クラスタ数",k,"個の時の平均##########################\n"
+		s_avg.each_with_index do |a,l|
+			f.print "cl[",l+1,"] = ",a,"\n"
+		end
+        f.print "##########################クラスタ数",k,"個の時の標準偏差##########################\n"
+		a_sta.each_with_index do |s,m|
+			f.print "cl[",m+1,"] = ",s,"\n"
+		end
+#        f.print "##########################異常データ##########################\n"
+#		x_ano_front.each_with_index do |xaf,s|
+#			f.print xaf[0],"\n"
+#			if (s+1)%5==0
+#				f.print "\n"
+#			end
+#		end
+        f.print "##########################異常データ(標準化)##########################\n"
+		x_ano_after.each_with_index do |xaa,t|
+			f.print xaa[0],"\n"
+			if (t+1)%5==0
+				f.print "\n"
+			end
+		end
+        f.print "##########################逸脱度##########################\n"
+        dev.each_with_index do | d,i|
+			f.print d
+			if (i+1)%5 ==0
+				f.print "\n"
+			end
+			f.print "\n"
+		end
+		f.print "##############################################################\n"
+		front_dev.each_with_index do |fd,j|
+			f.print "タイムスロット",j," = ",fd,"\n"
+		end
+	f.close
+end
+
 =begin
 #################################################
 	ここからmainメソッドみたいな感じ
@@ -63,16 +139,23 @@ end
 =end
 inp_nom
 print "---------------------通常データ-----------------------------------\n"
-p @x
+for i in 0...@x.size
+	p @x[i][0]
+end
+x_front = @x
 print "----------------------------------------------------------------\n"
+out_put
 cal_s(@x)
 print "---------------------通常データ(標準化)-----------------------------------\n"
-p @x
+for i in 0...@x.size
+	p @x[i][0]
+    x_after << @x[i][0]
+end
+x_after = @x
 print "----------------------------------------------------------------\n"
-
-s,k = cal_r(@x)
+s,k,km = cal_r(@x)
 s_avg,a_sta = cal_nom(s,k)
-print "s_avg = ",s_avg,"\n"
-print "s_sta = ",a_sta,"\n"
-dev(s_avg,a_sta,k)
-out_put
+#print "s_avg = ",s_avg,"\n"
+#print "s_sta = ",a_sta,"\n"
+x_ano_front,x_ano_after,dev,front_dev = dev(s_avg,a_sta,k)
+result_output(x_front,x_after,k,km,s_avg,a_sta,x_ano_front,x_ano_after,dev,front_dev)
