@@ -17,6 +17,7 @@ s = []
 k = []			#通常データから求めたクラスタ数
 s_avg = []		#通常データから求めたSijの平均
 a_sta = []		#通常データから求めたSijの標準偏差
+km = []
 
 =begin	
 ################################################
@@ -64,7 +65,7 @@ end
 
 
 
-def result_output(x_front,x_after,k,s_avg,a_sta,x_ano_front,x_ano_after,dev,front_dev)
+def result_output(x_front,x_after,k,s_avg,a_sta,x_ano_front,x_ano_after,dev,front_dev,km)
     filename = File.basename(ARGV[1])
 	f =open("result/result_#{filename}",'w')
 
@@ -83,15 +84,17 @@ def result_output(x_front,x_after,k,s_avg,a_sta,x_ano_front,x_ano_after,dev,fron
     end
     f.print "##########################クラスタ数",k,"個の時の標準偏##########################\n"
     a_sta.each_with_index do |s,m|
-    f.print "cl[",m+1,"] = ",s,"\n"
-end
-#        f.print "##########################異常データ##########################\n"
-#		x_ano_front.each_with_index do |xaf,s|
-#			f.print xaf[0],"\n"
-#			if (s+1)%5==0
-#				f.print "\n"
-#			end
-#		end
+		f.print "cl[",m+1,"] = ",s,"\n"
+	end
+        f.print "##########################クラスタリング結果##########################\n"
+			f.print "km[\"cluster\"] = \n",km["cluster"],"\n"
+			f.print "km[\"centers\"] = \n"
+			km["centers"].each do |xx|
+				f.print xx,"\n"
+			end
+			f.print "km[\"size\"] = \n",km["size"],"\n"
+
+
         f.print "##########################異常データ(標準化)##########################\n"
 		x_ano_after.each_with_index do |xaa,t|
 			f.print xaa[0],"\n"
@@ -120,7 +123,7 @@ end
 	各ファイルのメソッドの呼び出し
 #################################################
 =end
-inp_nom
+@x = inp_nom
 print "---------------------通常データ-----------------------------------\n"
 for i in 0...@x.size
 	p @x[i][0]
@@ -136,10 +139,10 @@ for i in 0...@x.size
 end
 x_after = @x
 print "----------------------------------------------------------------\n"
-s,k = cal_r(@x)
+s,k,km = cal_r(@x)
 #p s
 s_avg,a_sta = cal_nom(s,k)
 #print "s_avg = ",s_avg,"\n"
 #print "s_sta = ",a_sta,"\n"
 x_ano_front,x_ano_after,dev,front_dev = dev(s_avg,a_sta,k)
-result_output(x_front,x_after,k,s_avg,a_sta,x_ano_front,x_ano_after,dev,front_dev)
+result_output(x_front,x_after,k,s_avg,a_sta,x_ano_front,x_ano_after,dev,front_dev,km)

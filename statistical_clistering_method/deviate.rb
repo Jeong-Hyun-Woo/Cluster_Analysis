@@ -122,11 +122,11 @@ def dev(s_j_i_avg,s_j_i_sta,c_k)
 	end
 
 	
-	for tim in 0...@y.size			#タイムスロットでループ
+	for tim in 0...y.size			#タイムスロットでループ
 	#print "timeslot = ",tim,"=========================================\n"
 		for j in 0...c_k			#クラスタでループ			
 		#print "j = ",j,"\n"
-			for i in 0...@y[0][1].size		#プロトコルでループ
+			for i in 0...y[0][1].size		#プロトコルでループ
 			#p s_j_i_sta[j][i]
 			
 			#################テスト#########################################

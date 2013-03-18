@@ -11,7 +11,7 @@ require File.expand_path("../array",__FILE__)
 
 
 def cal_r(x)
-    km =[]		#クラスタリングした結果を入れる配列
+    $km =[]		#クラスタリングした結果を入れる配列
     s =[]		#逸脱度の処理の方に値を渡すための変数
     k =1		#x-meansにより得られたクラスタ数を代入する
     kc = []     #kmcを規定の形に合わせるために要した配列
@@ -25,24 +25,24 @@ def cal_r(x)
     
     filename = ARGV[2]
     rr = RSRuby::instance   #R言語使用に必要
-    km = rr.eval_R(<<-RCOMMAND)
+    $km = rr.eval_R(<<-RCOMMAND)
         a <- read.csv("#{filename}")
         source('./xmeans.R')
         xmeans(a,2,20)
     RCOMMAND
     #¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
                     
-    k = km["size"].size
+    k = $km["size"].size
     print "クラスタ数 = ",k,"個\n"
-    for i in 0...km["cluster"].size
+    for i in 0...$km["cluster"].size
         kc = []
         for i2 in 0...x[0][0].size
-            kc << km["cluster"][i].to_i
+            kc << $km["cluster"][i].to_i
         end
         kmc << kc
     end
     #p kc
     p kmc
     s = [x,kmc]
-	return s,k
+	return s,k,$km
 end

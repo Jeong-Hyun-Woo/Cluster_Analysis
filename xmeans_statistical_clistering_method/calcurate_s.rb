@@ -7,20 +7,20 @@ require File.expand_path("../array",__FILE__)
 #################################################
 =end
 
-@x = []
+$x = []
 
 def cal_s(x)
     
     
     p=[]     #protocolを一時的に格納
     tim = 0      #タイムスタンプを管理
-    @x = x
+    $x = x
     
     loop do 
-        for n in 0...@x[tim][0].size
-            @x[tim][0][n]  = (@x[tim][0][n] - @x[tim][0].avg)/@x[tim][0].standard_deviation
+        for n in 0...$x[tim][0].size
+            $x[tim][0][n]  = ($x[tim][0][n] - $x[tim][0].avg)/$x[tim][0].standard_deviation
         end
-        if tim == @x.size-1 then
+        if tim == $x.size-1 then
             break
         end
         tim +=1
